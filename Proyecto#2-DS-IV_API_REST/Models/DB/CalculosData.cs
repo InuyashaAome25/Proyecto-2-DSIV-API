@@ -47,7 +47,7 @@ namespace Proyecto_2_DS_IV_API_REST.Models.DB
             {
                 SqlCommand cmd = new SqlCommand("UpdateCalculo", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ID", oCalculos.ID);
+                cmd.Parameters.AddWithValue("@IDCalculo", oCalculos.ID);
                 cmd.Parameters.AddWithValue("@Operacion", oCalculos.Operacion);
                 cmd.Parameters.AddWithValue("@Resultado", oCalculos.Resultado);
                 cmd.Parameters.AddWithValue("@Operador", oCalculos.Operador);
@@ -144,7 +144,7 @@ namespace Proyecto_2_DS_IV_API_REST.Models.DB
             {
                 SqlCommand cmd = new SqlCommand("GetCalculosUnico", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ID", idCalculo);
+                cmd.Parameters.AddWithValue("@IdCalculo", idCalculo);
 
                 try
                 {
@@ -174,25 +174,24 @@ namespace Proyecto_2_DS_IV_API_REST.Models.DB
             }
         }
 
-        public Calculos ObtenerCalculo(string operador)
+        public List<Calculos> ObtenerCalculo(string operador)
         {
-            Calculos calculos = new Calculos();
+            List<Calculos> calculosList = new List<Calculos>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 SqlCommand cmd = new SqlCommand("GetCalculosOperador", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ID", operador);
+                cmd.Parameters.AddWithValue("@Operador", operador);
 
                 try
                 {
                     conn.Open();
-                    cmd.ExecuteNonQuery();
 
                     using (SqlDataReader rdr = cmd.ExecuteReader())
                     {
                         while (rdr.Read())
                         {
-                            calculos = new Calculos()
+                            Calculos calculo = new Calculos()
                             {
                                 ID = Convert.ToInt32(rdr["ID"]),
                                 Operacion = rdr["Operacion"].ToString(),
@@ -200,16 +199,19 @@ namespace Proyecto_2_DS_IV_API_REST.Models.DB
                                 Operador = rdr["Operador"].ToString(),
                                 Fecha = Convert.ToDateTime(rdr["Fecha"].ToString())
                             };
+                            calculosList.Add(calculo);
                         }
                     }
-                    return calculos;
+                    return calculosList;
                 }
                 catch (Exception ex)
                 {
-                    return calculos;
+                    // Log el error (opcional)
+                    return new List<Calculos>();  // Retornar una lista vacía en caso de error
                 }
             }
         }
+
         public bool DeleteCalculo(int idCalculo)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))

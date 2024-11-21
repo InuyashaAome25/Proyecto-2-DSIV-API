@@ -26,11 +26,12 @@ namespace Proyecto_2_DS_IV_API_REST.Controllers
         }
 
         // Método para obtener una lista de cálculos por operador
-        public Calculos GetByOperador(string operador)
+        public List<Calculos> GetByOperador(string operador)
         {
             CalculosData calculosData = new CalculosData();
             return calculosData.ObtenerCalculo(operador);
         }
+
 
         // Método para obtener un cálculo por ID
         public Calculos GetById(int idCalculo)
